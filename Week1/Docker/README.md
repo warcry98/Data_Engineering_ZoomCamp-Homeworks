@@ -1,0 +1,1 @@
+Run run_docker.sh in Linux or WSL to run bash inside python:3.9 docker
