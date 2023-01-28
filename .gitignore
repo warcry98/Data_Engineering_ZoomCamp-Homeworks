@@ -2,3 +2,6 @@ venv
 env
 Week1/SQL/Data/*.gz
 Week1/SQL/Data/*.csv
+Week1/Terraform/*.json
+Week1/Terraform/.terraform*
+Week1/Terraform/*.tfstate*

@@ -3,7 +3,7 @@ terraform {
   backend "local" {}
   required_providers {
     google = {
-      sosource = "hashicorp/google"
+      source = "hashicorp/google"
     }
   }
 }
