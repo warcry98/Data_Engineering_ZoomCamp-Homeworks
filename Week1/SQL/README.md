@@ -8,4 +8,4 @@ run get_data.sh in folder Data to download files
   '''
     pip install -r requirements.txt
   '''
-- run csv_to_postgresql.ipynb
+- run csv_to_postgresql.ipynb or csv_to_postgres.py
