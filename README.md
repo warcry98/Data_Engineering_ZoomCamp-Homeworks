@@ -6,3 +6,10 @@
   >SQL
 
   >Terraform
+
+## Week 2
+  >Prefect
+
+  >Local file to GCS
+
+  >GCS file to Bigquery
