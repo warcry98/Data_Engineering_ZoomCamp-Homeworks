@@ -9,3 +9,4 @@ Week2/*/*.ipynb
 Week2/*/*.json
 Week2/*/backup*.py
 Week2/*/*.terraform*
+Week2/Terraform/*.tfstate*
