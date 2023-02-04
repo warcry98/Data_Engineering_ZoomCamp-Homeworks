@@ -1,3 +1,4 @@
+google-cloud==0.34.0
 pandas==1.5.3
 pandas-gbq==0.19.1
 prefect==2.7.11

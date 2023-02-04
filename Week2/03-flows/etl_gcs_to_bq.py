@@ -3,7 +3,7 @@ import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 from prefect_gcp import GcpCredentials
-
+from google.cloud import bigquery
 
 @task(retries=3)
 def extract_from_gcs(color: str, year: int, month: int) -> pd.DataFrame:
@@ -17,26 +17,42 @@ def extract_from_gcs(color: str, year: int, month: int) -> pd.DataFrame:
 
 
 @task()
-def write_bq(df: pd.DataFrame) -> None:
+def write_bq(df: pd.DataFrame, destination_table: str, project_id: str) -> None:
     """Write DataFrame to BiqQuery"""
 
     gcp_credentials_block = GcpCredentials.load("zoom-gcp-creds")
 
     df.to_gbq(
-        destination_table="dezoomcamp.rides",
-        project_id="prefect-sbx-community-eng",
+        destination_table,
+        project_id,
         credentials=gcp_credentials_block.get_credentials_from_service_account(),
         chunksize=500_000,
         if_exists="append",
     )
+
+@task
+def bq_total_row(destination_table: str, project_id: str) -> int:
+    """Total rows from BigQuery"""    
+    gcp_credentials_block = GcpCredentials.load("zoom-gcp-creds")
+
+    client = bigquery.Client(credentials=gcp_credentials_block.get_credentials_from_service_account(), project=project_id)
+    query = f"SELECT COUNT(*) AS n_rows FROM {destination_table}"
+    query_job = client.query(query)
+    results = query_job.result()
+    for row in results:
+        n_rows = row.n_rows
+        return n_rows
 
 
 @flow(log_prints=True)
 def el_gcs_to_bq(year: int, month: int, color: str) -> None:
     """EL flow to load data into Big Query"""
     df = extract_from_gcs(color, year, month)
-    write_bq(df)
-    print(f"rows: {len(df)}")
+    destination_table="dezoomcamp.rides"
+    project_id="prefect-sbx-community-eng"
+    write_bq(df, destination_table, project_id)
+    total_row = bq_total_row(destination_table, project_id)
+    print(f"rows: {total_row}")
 
 @flow
 def el_main_flow(
