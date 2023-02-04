@@ -5,3 +5,7 @@ Week1/SQL/Data/*.csv
 Week1/Terraform/*.json
 Week1/Terraform/.terraform*
 Week1/Terraform/*.tfstate*
+Week2/*/*.ipynb
+Week2/*/*.json
+Week2/*/backup*.py
+Week2/*/*.terraform*
