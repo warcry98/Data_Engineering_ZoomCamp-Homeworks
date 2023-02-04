@@ -1,17 +1,25 @@
+import os
 from pathlib import Path
+from urllib.parse import urlparse
 import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
-from random import randint
+
+PATH_DIRECTORY = Path().resolve()
+DATA_DIRECTORY = PATH_DIRECTORY / "data"
+exists = os.path.exists(DATA_DIRECTORY)
+if not exists:
+  os.mkdir(DATA_DIRECTORY)
 
 
 @task(retries=3)
 def fetch(dataset_url: str) -> pd.DataFrame:
     """Read taxi data from web into pandas DataFrame"""
-    # if randint(0, 1) > 0:
-    #     raise Exception
-
-    df = pd.read_csv(dataset_url)
+    parse_url = urlparse(dataset_url)
+    dataset_file = os.path.basename(parse_url.path)
+    if not os.path.isfile(f"{DATA_DIRECTORY}/{dataset_file}"):
+        os.system(f"wget {dataset_url} -P {DATA_DIRECTORY}/")
+    df = pd.read_csv(DATA_DIRECTORY/dataset_file)
     return df
 
 
@@ -29,6 +37,8 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 @task()
 def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     """Write DataFrame out locally as parquet file"""
+    if not os.path.exists(DATA_DIRECTORY/color):
+       os.mkdir(DATA_DIRECTORY/color)
     path = Path(f"data/{color}/{dataset_file}.parquet")
     df.to_parquet(path, compression="gzip")
     return path

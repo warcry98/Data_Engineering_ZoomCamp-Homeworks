@@ -30,7 +30,7 @@ def write_bq(df: pd.DataFrame, destination_table: str, project_id: str) -> None:
         if_exists="append",
     )
 
-@task
+@task()
 def bq_total_row(destination_table: str, project_id: str) -> int:
     """Total rows from BigQuery"""    
     gcp_credentials_block = GcpCredentials.load("zoom-gcp-creds")
@@ -48,8 +48,8 @@ def bq_total_row(destination_table: str, project_id: str) -> int:
 def el_gcs_to_bq(year: int, month: int, color: str) -> None:
     """EL flow to load data into Big Query"""
     df = extract_from_gcs(color, year, month)
-    destination_table="dezoomcamp.rides"
-    project_id="prefect-sbx-community-eng"
+    destination_table="trips_data_all.ny_trip"
+    project_id="atlantean-glyph-376012"
     write_bq(df, destination_table, project_id)
     total_row = bq_total_row(destination_table, project_id)
     print(f"rows: {total_row}")

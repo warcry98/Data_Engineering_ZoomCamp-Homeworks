@@ -10,3 +10,5 @@ Week2/*/*.json
 Week2/*/backup*.py
 Week2/*/*.terraform*
 Week2/*/*.tfstate*
+Week2/*/data
+Week2/data
