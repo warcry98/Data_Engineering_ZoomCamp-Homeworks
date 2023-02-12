@@ -34,7 +34,7 @@ def load_files() -> dict:
   for month in year_month_list:
     if not os.path.isfile(f"{PATH_DIRECTORY}/fhv_tripdata_{month}.csv.gz"):
       os.system(f"wget https://github.com/DataTalksClub/nyc-tlc-data/releases/download/fhv/fhv_tripdata_{month}.csv.gz -P {PATH_DIRECTORY}/")
-    dataframe_collection[month] = dd.DataFrame(dd.read_csv(f"{PATH_DIRECTORY}/fhv_tripdata_{month}.csv.gz"))
+    dataframe_collection[month] = dd.read_csv(f"{PATH_DIRECTORY}/fhv_tripdata_{month}.csv.gz", blocksize=None, assume_missing=True)
   
   return dataframe_collection
 
@@ -70,48 +70,24 @@ def write_gcs() -> None:
     filename = os.path.basename(file)
     blob = bucket.blob(f"data/{filename}", chunk_size=8388608)
     print(f"upload {filename}")
-    blob.upload_from_filename(file)
+    blob.upload_from_filename(file, timeout=12000)
     print(f"{filename} uploaded")
 
 
 # %%
-def web_to_bq(collection: dict) -> None:
-  for key in collection.keys():
+def web_to_bq() -> None:
+  for month in year_month_list:
+    df = dd.read_parquet(path=f"{PATH_DIRECTORY}/parquet/fhv_tripdata_{month}.parquet")
+    print(f"Load fhv_tripdata_{month}.parquet to bigquery")
     pandas_gbq.to_gbq(
-      collection[key], 
-      "trips_data_all.data_trip", 
+      dataframe=df.compute(), 
+      destination_table="trips_data_all.data_trip", 
       project_id=bq_config["project_id"], 
       progress_bar=True,
-      chunksize='500_000',
       if_exists='append', 
       credentials=credential
     )
-
-# %%
-def create_external_table() -> None:
-  client = bigquery.Client(credentials=credential,project=bq_config['project_id'])
-  dataset_id = "trips_data_all"
-  table_id = "fvh_trip"
-  bucket_id = bq_config['bucket_id']
-
-  job_config = bigquery.QueryJobConfig()
-  table_ref = client.dataset(dataset_id).table(table_id)
-  job_config.destination = table_ref
-  sql = f"""
-         CREATE OR REPLACE EXTERNAL TABLE `{bq_config['project_id']}.{dataset_id}.{table_id}`
-         OPTIONS (
-            format = 'PARQUET',
-            uris = ['gs://{bucket_id}/data/fvh_tripdata_2019-*.parquet]
-         );
-         """
-  
-  query_job = client.query(
-    sql,
-    job_config=job_config,
-  )
-
-  query_job.result()
-  print(f"Query results loaded to table {table_ref.path}")
+    print(f"Load fhv_tripdata_{month}.parquet to bigquery finished")
 
   dask_client.close()
   
@@ -121,5 +97,4 @@ if __name__ == '__main__':
   transform_collection = transform(dataframe_collection)
   write_local(transform_collection)
   write_gcs()
-  web_to_bq(transform_collection)
-  create_external_table()
+  web_to_bq()
