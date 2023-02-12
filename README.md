@@ -13,3 +13,8 @@
   >Local file to GCS
 
   >GCS file to Bigquery
+
+## Week 3
+  >Download dataset
+
+  >Dataset to Bigquery

@@ -13,3 +13,10 @@ Week2/*/*.terraform*
 Week2/*/*.tfstate*
 Week2/*/data
 Week2/data
+Week3/data/*.gz
+Week3/data/*.json
+Week3/*/*.terraform*
+Week3/*/*.tfstate*
+Week3/*/*.json
+Week3/*.json
+Week3/data/parquet

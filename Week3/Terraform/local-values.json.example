@@ -1,0 +1,5 @@
+{
+  "data_lake_bucket": "<your data lake bucket>",
+  "credential_file": "<your credential file>",
+  "project_id": "<your project id>"
+}
