@@ -1,3 +1,4 @@
+dask==2023.1.0
 pandas==1.5.3
 pandas-gbq==0.19.1
 tqdm==4.64.1

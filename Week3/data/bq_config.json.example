@@ -1,0 +1,5 @@
+{
+  "project_id": "<your project_id>",
+  "credential_file": "<your json file for google cloud credential>",
+  "bucket_id": "<your bucket_id of GCS>"
+}

@@ -3,11 +3,6 @@ locals {
   local_data       = jsondecode(file("${path.module}/local-values.json"))
 }
 
-# output "project_id" {
-#   value = local.local_data
-# }
-
-
 variable "region" {
   description = "Region for GCP resources. Choose as per your location: https://cloud.google.com/about/locations"
   default     = "us-central1"

@@ -14,8 +14,8 @@ provider "google" {
   credentials = file(local.local_data["credential_file"])
 }
 
-source "google_storage_bucket" "data-lake-bucket" {
-  name     = "${local.data_lake_bucket}_${var.project}" # Concatenating DL bucket & Project name for unique naming
+resource "google_storage_bucket" "data-lake-bucket" {
+  name     = "${local.data_lake_bucket}_${local.local_data["project_id"]}" # Concatenating DL bucket & Project name for unique naming
   location = var.region
 
   # Optional, but recommended settings:
@@ -45,8 +45,14 @@ resource "google_bigquery_dataset" "dataset" {
   delete_contents_on_destroy = true
 }
 
-resource "google_bigquery_table" "dataset_table" {
+resource "google_bigquery_table" "dataset_table1" {
   dataset_id          = google_bigquery_dataset.dataset.dataset_id
-  table_id            = var.BQ_TABLE
+  table_id            = var.BQ_TABLE1
+  deletion_protection = false
+}
+
+resource "google_bigquery_table" "dataset_table2" {
+  dataset_id          = google_bigquery_dataset.dataset.dataset_id
+  table_id            = var.BQ_TABLE2
   deletion_protection = false
 }

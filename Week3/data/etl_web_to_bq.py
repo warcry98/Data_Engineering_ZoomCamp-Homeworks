@@ -18,9 +18,6 @@ print(year_month_list)
 with open(PATH_DIRECTORY / "bq_config.json", "r") as f:
   bq_config = json.load(f)
 
-print(bq_config['project_id'])
-print(bq_config['credential_file'])
-
 credential = Credentials.from_service_account_file(bq_config['credential_file'])
 
 # %%
@@ -45,9 +42,6 @@ def transform(collection: dict) -> dict:
     df = collection[key]
     df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
     df["dropOff_datetime"] = pd.to_datetime(df["dropOff_datetime"])
-    print(f"pre: missing PUlocationID {key} count: {df['PUlocationID'].isna().sum()}")
-    df["PUlocationID"].fillna(0, inplace=True) 
-    print(f"post: missing PUlocationID {key} count: {df['PUlocationID'].isna().sum()}")
     collection[key] = df
   return collection
 # %%
@@ -64,8 +58,7 @@ def web_to_bq(collection: dict) -> None:
     )
   
 # %%
-# if __name__ == '__main__':
-#   dataframe_collection = load_files()
-#   # print_dataframe(dataframe_collection)
-#   transform_collection = transform(dataframe_collection)
-#   web_to_bq(transform_collection)
+if __name__ == '__main__':
+  dataframe_collection = load_files()
+  transform_collection = transform(dataframe_collection)
+  web_to_bq(transform_collection)
