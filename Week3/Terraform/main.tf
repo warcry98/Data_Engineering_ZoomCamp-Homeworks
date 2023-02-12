@@ -14,7 +14,7 @@ provider "google" {
   credentials = file(local.local_data["credential_file"])
 }
 
-esource "google_storage_bucket" "data-lake-bucket" {
+source "google_storage_bucket" "data-lake-bucket" {
   name     = "${local.data_lake_bucket}_${var.project}" # Concatenating DL bucket & Project name for unique naming
   location = var.region
 
