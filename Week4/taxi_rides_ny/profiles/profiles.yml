@@ -1,0 +1,12 @@
+taxi_rides_ny:
+  target: local
+  outputs:
+    local:
+      type: postgres
+      host: "localhost"
+      user: "postgres"
+      password: "postgres"
+      port: 5434
+      dbname: "postgres"
+      schema: "public"
+      threads: 4

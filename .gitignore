@@ -21,3 +21,5 @@ Week3/*/*.tfstate*
 Week3/*/*.json
 Week3/*.json
 Week3/data/parquet
+Week4/data/*/*.csv.gz
+Week4/venv
