@@ -23,3 +23,5 @@ Week3/*.json
 Week3/data/parquet
 Week4/data/*/*.csv.gz
 Week4/venv
+!Week5/Data
+Week5/Data/*
